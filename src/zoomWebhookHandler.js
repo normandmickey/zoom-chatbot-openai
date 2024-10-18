@@ -1,10 +1,10 @@
-const { callAnthropicAPI } = require('./anthropic');
+import { callOpenAIAPI } from './openai-api.js';
 
 async function handleZoomWebhook(req, res) {
   try {
     if (req.body.event === 'bot_notification') {
       console.log('Zoom Team Chat App message received.');
-      await callAnthropicAPI(req.body.payload);
+      await callOpenAIAPI(req.body.payload);
     } else if (req.body.event === 'bot_installed') {
       console.log('Zoom for Team Chat installed.');
     } else if (req.body.event === 'app_deauthorized') {
@@ -26,4 +26,4 @@ async function handleZoomWebhook(req, res) {
   }
 }
 
-module.exports = { handleZoomWebhook };
+export { handleZoomWebhook };

@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 // Function to get the chatbot token from Zoom
 async function getChatbotToken() {
@@ -20,4 +20,4 @@ async function getChatbotToken() {
   }
 }
 
-module.exports = { getChatbotToken };
+export { getChatbotToken };

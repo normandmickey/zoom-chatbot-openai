@@ -1,0 +1,20 @@
+{
+  "name": "zoom-chatbot-openai",
+  "version": "1.0.0",
+  "description": "This project integrates Anthropic's Claude AI with Zoom Team Chat, creating an intelligent chatbot that can assist users directly within their Zoom conversations. The bot leverages Claude's advanced language understanding and generation capabilities to provide helpful responses to user queries on a wide range of topics.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "openai": "^4.68.0"
+  }
+}

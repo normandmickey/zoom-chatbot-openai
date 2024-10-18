@@ -1,9 +1,9 @@
-require('dotenv').config();
+import * as dotenv from 'dotenv';
+import express from 'express';
+import bodyParser  from 'body-parser';
+import { handleZoomWebhook } from './src/zoomWebhookHandler.js';
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const { handleZoomWebhook } = require('./src/zoomWebhookHandler');
-
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -15,6 +15,6 @@ app.get('/', (req, res) => {
 });
 
 // Webhook endpoint for Zoom events
-app.post('/anthropic', handleZoomWebhook);
+app.post('/openai', handleZoomWebhook);
 
 app.listen(port, () => console.log(`Zoom for Team Chat listening on port ${port}!`));
