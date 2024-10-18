@@ -24,7 +24,7 @@ You need to set up your environment variables. Create a `.env` file in the proje
 - ZOOM_BOT_JID=
 - ZOOM_WEBHOOK_SECRET_TOKEN=
 - ZOOM_VERIFICATION_CODE=
-- OPENAU_API_KEY=
+- OPENAI_API_KEY=
 
 
 To obtain these variables:
