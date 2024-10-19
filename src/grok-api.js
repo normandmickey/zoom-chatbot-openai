@@ -1,16 +1,14 @@
 import { getChatbotToken } from './zoomAuth.js';
 import { sendChatToZoom } from './sendChatbotMessage.js';
-import OpenAI from "openai"
 import * as dotenv from 'dotenv';
 import { AskNewsSDK } from '@emergentmethods/asknews-typescript-sdk'
+import Groq from "groq-sdk";
 
 dotenv.config();
 
 let conversationHistory = {};
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const ask = new AskNewsSDK({
   clientId: process.env.ASKNEWS_CLIENT_ID,
@@ -19,7 +17,7 @@ const ask = new AskNewsSDK({
 })
 
 // Function to handle communication with the OpenAI API
-async function callOpenAIAPI(payload) {
+async function callGroqAPI(payload) {
   try {
     const question = payload.cmd;
     const userJid = payload.toJid;
@@ -38,14 +36,14 @@ async function callOpenAIAPI(payload) {
     
     //console.log("AskNews: " + context);
 
-    const chatCompletion = await openai.chat.completions.create({
+    const chatCompletion = await groq.chat.completions.create({
         messages: [{ 
           role: "system",
           content: "You are the worlds best AI Sports Handicapper and sportswriter. You are smart, funny and accurate and use a lot of sports betting lingo. Limit your response to 1500 characters or less.",
           role: "user", 
           content: "Write a humorous prediction for the following matchup.  Include only relevant stats and odds for the game in question note any injiries or significant players. Give your best bet based on the context provided take into account that underdogs win about 41 percent of the time in baseball and hockey, 35 percent in football and 25 percent in baskeball. Do not make up any details. " + context + ": " + question 
         }],
-        model: "gpt-4o",
+        model: "llama-3.1-70b-versatile",
     });
     const completion = chatCompletion.choices[0].message.content;
     //console.log("completion: " + completion)
@@ -57,8 +55,8 @@ async function callOpenAIAPI(payload) {
     const chatbotToken = await getChatbotToken();
     await sendChatToZoom(chatbotToken, completion, payload);  // Call sendChatToZoom
   } catch (error) {
-    console.error('Error calling OpenAI API:', error);
+    console.error('Error calling Groq API:', error);
   }
 }
 
-export { callOpenAIAPI };
+export { callGroqAPI };

@@ -8,11 +8,11 @@ async function sendChatToZoom(chatbotToken, message, payload) {
       'user_jid': payload.toJid,
       'content': {
         'head': {
-          'text': 'OpenAI',
+          'text': 'Groq',
         },
         'body': [{
           'type': 'message',
-          'text': 'gpt-4o: ' + message,
+          'text': 'llama-3.1: ' + message,
         }],
       },
     };

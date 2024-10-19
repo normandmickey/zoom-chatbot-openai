@@ -1,10 +1,10 @@
-import { callOpenAIAPI } from './openai-api.js';
+import { callGroqAPI } from './groq-api.js';
 
 async function handleZoomWebhook(req, res) {
   try {
     if (req.body.event === 'bot_notification') {
       console.log('Zoom Team Chat App message received.');
-      await callOpenAIAPI(req.body.payload);
+      await callGroqAPI(req.body.payload);
     } else if (req.body.event === 'bot_installed') {
       console.log('Zoom for Team Chat installed.');
     } else if (req.body.event === 'app_deauthorized') {
