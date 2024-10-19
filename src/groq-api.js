@@ -53,7 +53,7 @@ async function callGroqAPI(payload) {
     
     // Get Zoom chatbot token and send message to Zoom
     const chatbotToken = await getChatbotToken();
-    await sendChatToZoom(chatbotToken, completion, payload);  // Call sendChatToZoom
+    await sendChatToZoom(chatbotToken, question, completion, payload);  // Call sendChatToZoom
   } catch (error) {
     console.error('Error calling Groq API:', error);
   }

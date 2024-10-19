@@ -1,18 +1,18 @@
 import axios from 'axios';
 
 // Function to send message to Zoom using the chatbot token
-async function sendChatToZoom(chatbotToken, message, payload) {
+async function sendChatToZoom(chatbotToken, question, message, payload) {
     const data = {
       'robot_jid': process.env.ZOOM_BOT_JID,
       'to_jid': payload.toJid,
       'user_jid': payload.toJid,
       'content': {
         'head': {
-          'text': 'Groq',
+          'text': 'GPTSW ' + question,
         },
         'body': [{
           'type': 'message',
-          'text': 'llama-3.1: ' + message,
+          'text': message,
         }],
       },
     };
