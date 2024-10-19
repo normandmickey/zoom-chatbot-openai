@@ -41,7 +41,8 @@ async function callOpenAIAPI(payload) {
 
     const chatCompletion = await openai.chat.completions.create({
         messages: [{ 
-          system: "You are the worlds best AI Sports Handicapper and sportswriter. You are smart, funny and accurate and use a lot of sports betting lingo. Limit your response to 1500 characters or less.",
+          role: "system",
+          content: "You are the worlds best AI Sports Handicapper and sportswriter. You are smart, funny and accurate and use a lot of sports betting lingo. Limit your response to 1500 characters or less.",
           role: "user", 
           content: context + ": " + question 
         }],
