@@ -28,11 +28,11 @@ async function callOpenAIAPI(payload) {
     const newUserPrompt = `\n\nHuman: ${payload.cmd}\n\nAssistant:`;
     const prompt = history + newUserPrompt;
     const newsContext = await ask.news.searchNews(
-      { query: "top news" + question, 
+      { query: "prediction" + question, 
         nArticles: 5, 
         returnType: 'dicts', 
         method: 'kw', 
-        categories: ['Politics'] 
+        categories: ['Sports'] 
       })
 
     const context = JSON.stringify(newsContext)
@@ -41,7 +41,7 @@ async function callOpenAIAPI(payload) {
 
     const chatCompletion = await openai.chat.completions.create({
         messages: [{ 
-          system: "You are a smart, funny and accurate news reporter.  Summarize the following articles",
+          system: "You are the worlds best AI Sports Handicapper and sportswriter. You are smart, funny and accurate and use a lot of sports betting lingo. Limit your response to 1500 characters or less.",
           role: "user", 
           content: context + ": " + question 
         }],
