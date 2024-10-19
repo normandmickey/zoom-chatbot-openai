@@ -44,7 +44,7 @@ async function callOpenAIAPI(payload) {
           role: "system",
           content: "You are the worlds best AI Sports Handicapper and sportswriter. You are smart, funny and accurate and use a lot of sports betting lingo. Limit your response to 1500 characters or less.",
           role: "user", 
-          content: context + ": " + question 
+          content: "Write a humorous prediction for the following matchup.  Include only relevant stats and odds for the game in question note any injiries or significant players. Give your best bet based on the context provided take into account that underdogs win about 41 percent of the time in baseball and hockey, 35 percent in football and 25 percent in baskeball. Do not make up any details. " + context + ": " + question 
         }],
         model: "gpt-4o",
     });
