@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import { AskNewsSDK } from '@emergentmethods/asknews-typescript-sdk'
 import Groq from "groq-sdk";
 import { OpenAI } from "openai";
+import { WikipediaQueryRun } from "@langchain/community/tools/wikipedia_query_run";
 
 dotenv.config();
 
@@ -19,6 +20,12 @@ const ask = new AskNewsSDK({
   clientSecret: process.env.ASKNEWS_CLIENT_SECRET,
   scopes: ['news'],
 })
+
+
+const tool = new WikipediaQueryRun({
+  topKResults: 3,
+  maxDocContentLength: 4000,
+});
 
 // Function to handle communication with the OpenAI API
 async function callGroqAPI(payload) {
@@ -37,6 +44,9 @@ async function callGroqAPI(payload) {
       })
 
     const context = JSON.stringify(newsContext)
+
+    const wikiContext = await tool.invoke(question);
+    console.log(wikiContext);
     
     //console.log("AskNews: " + context);
 
