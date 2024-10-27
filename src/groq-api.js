@@ -28,27 +28,19 @@ async function callGroqAPI(payload) {
     const history = conversationHistory[userJid] || '';
     const newUserPrompt = `\n\nHuman: ${payload.cmd}\n\nAssistant:`;
     const prompt = history + newUserPrompt;
-    //const newsContext = await ask.news.searchNews(
-    //  { query: "prediction" + question, 
-    //    nArticles: 5, 
-    //    returnType: 'dicts', 
-    //    method: 'kw', 
-    //    categories: ['Sports'] 
-    //  })
+    const newsContext = await ask.news.searchNews(
+      { query: "prediction" + question, 
+        nArticles: 5, 
+        returnType: 'dicts', 
+        method: 'kw', 
+        categories: ['Sports'] 
+      })
 
-    //const context = JSON.stringify(newsContext)
+    const context = JSON.stringify(newsContext)
     
     //console.log("AskNews: " + context);
 
-    const forecast = await ask.forecast.getForecast(
-      { query: "prediction" + question, 
-        
-      })
-
-    const context = JSON.stringify(forecast)
     
-    console.log("AskNews: " + context);
-
     try {
     var chatCompletion = await groq.chat.completions.create({
         messages: [{ 
