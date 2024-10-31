@@ -38,7 +38,7 @@ async function callGroqAPI(payload) {
     collections: ["chats"],
     docs: ["user-id"],
     sessionId: userJid,
-    userId: userJid,
+    userId: "a@example.com",
     config: {
       projectId: process.env.FIRECHAT_PROJECT_ID,
       credential: admin.credential.cert({
