@@ -11,6 +11,7 @@ import admin from "firebase-admin";
 dotenv.config();
 
 //let conversationHistory = {};
+//test
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const openai = new OpenAI({
