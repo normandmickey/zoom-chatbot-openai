@@ -146,7 +146,7 @@ function format (date) {
   const minutes = String(date.getMinutes()).padStart(2,0)
   const seconds = String(date.getSeconds()).padStart(2,0)
 
-  return `${year}-${month}-${day}:${minutes}:${seconds}`
+  return `${year}-${month}-${day}:${minutes}`
 }
 
 const llm = new ChatGroq({ apiKey: process.env.GROQ_API_KEY, model: "llama3-groq-8b-8192-tool-use-preview" });
