@@ -16,6 +16,7 @@
     "@langchain/groq": "^0.1.2",
     "@langchain/langgraph": "^0.2.20",
     "@langchain/langgraph-checkpoint-postgres": "^0.0.2",
+    "@types/node": "^22.9.0",
     "axios": "^1.7.7",
     "body-parser": "^1.20.3",
     "dotenv": "^16.4.5",
@@ -26,6 +27,9 @@
     "langsmith": "^0.2.3",
     "openai": "^4.68.0",
     "openweather-api-node": "^3.1.5",
-    "pg": "^8.13.1"
+    "pg": "^8.13.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
   }
 }
