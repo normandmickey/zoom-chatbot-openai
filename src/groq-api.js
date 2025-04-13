@@ -149,7 +149,7 @@ function format (date) {
   return `${year}-${month}-${day}:${minutes}`
 }
 
-const llm = new ChatGroq({ apiKey: process.env.GROQ_API_KEY, model: "llama3-groq-8b-8192-tool-use-preview" });
+const llm = new ChatGroq({ apiKey: process.env.GROQ_API_KEY, model: "llama-3.1-8b-instant" });
 //const llmWt = llm.bindTools([anTool, weatherTool, wikiTool]);
 //const llm = new ChatOpenAI({model: "gpt-4o-mini", });
 
