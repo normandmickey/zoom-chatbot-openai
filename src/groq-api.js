@@ -97,7 +97,7 @@ async function getWeather(lat, lon) {
 const anTool =
     new DynamicStructuredTool({
       name: "AskNews",
-      description: "Get current news information",
+      description: "Get current news information do not use for historical information",
       schema: z.object({
         query: z.string().describe('Search Query'),
       }),
