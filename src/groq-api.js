@@ -97,7 +97,7 @@ async function getWeather(lat, lon) {
 const anTool =
     new DynamicStructuredTool({
       name: "AskNews",
-      description: "Get current news and sports information",
+      description: "Get current news information",
       schema: z.object({
         query: z.string().describe('Search Query'),
       }),
@@ -149,7 +149,7 @@ function format (date) {
   return `${year}-${month}-${day}:${minutes}`
 }
 
-const llm = new ChatGroq({ apiKey: process.env.GROQ_API_KEY, model: "meta-llama/llama-4-scout-17b-16e-instruct" });
+const llm = new ChatGroq({ apiKey: process.env.GROQ_API_KEY, model: "llama-3.3-70b-versatile" });
 //const llmWt = llm.bindTools([anTool, weatherTool, wikiTool]);
 //const llm = new ChatOpenAI({model: "gpt-4o-mini", });
 
