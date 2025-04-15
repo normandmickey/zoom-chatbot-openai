@@ -149,9 +149,9 @@ function format (date) {
   return `${year}-${month}-${day}:${minutes}`
 }
 
-const llm = new ChatGroq({ apiKey: process.env.GROQ_API_KEY, model: "llama-3.3-70b-versatile" });
+//const llm = new ChatGroq({ apiKey: process.env.GROQ_API_KEY, model: "llama-3.3-70b-versatile" });
 //const llmWt = llm.bindTools([anTool, weatherTool, wikiTool]);
-//const llm = new ChatOpenAI({model: "gpt-4o-mini", });
+const llm = new ChatOpenAI({model: "gpt-4o-mini", });
 
 // Function to handle communication with the OpenAI API
 async function callGroqAPI(payload) {
