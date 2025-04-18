@@ -9,6 +9,8 @@ import pkg from "pg";
 import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
 import { DynamicStructuredTool, tool } from "@langchain/core/tools";
 import { ChatGroq } from "@langchain/groq";
+import { TDClient } from "twelvedata";
+
 
 import { z } from "zod";
 import axios from 'axios';
@@ -43,6 +45,10 @@ const ask = new AskNewsSDK({
   scopes: ['news'],
 });
 
+const td = new TDClient({
+  apikey: process.env.TWELVEDATA_API_KEY,
+})
+
 async function getNews(query) {
   const response = await ask.news.searchNews({
         query: query, // your keyword query
@@ -51,6 +57,17 @@ async function getNews(query) {
         method: 'kw', // use "nl" for natural language for your search, or "kw" for keyword search
       });
       return JSON.stringify(response);
+};
+
+async function getStock(ticker) {
+  try {
+    const quote = await td.quote({
+      symbol: ticker,
+    });
+    return quote.data;
+  } catch (error) {
+    return ('Error fetching quote:', error);
+  }
 };
 
 async function getGeo(city_name, state_code, country_code) {
@@ -103,6 +120,19 @@ const anTool =
       }),
       func: async ({query}) => {
         return getNews(query)
+      }
+    });
+
+// Define the tools for the agent to use
+const stockTool =
+    new DynamicStructuredTool({
+      name: "TwelveData",
+      description: "Get current stock price for ticker symbol and trends",
+      schema: z.object({
+         ticker: z.string().describe('Stock Ticker'),
+      }),
+      func: async ({ticker}) => {
+        return getStock(ticker)
       }
     });
 
@@ -163,7 +193,7 @@ async function callGroqAPI(payload) {
   try {
 
   const graph = createReactAgent({
-    tools: [anTool, weatherTool, wikiTool],
+    tools: [anTool, weatherTool, wikiTool, stockTool],
     llm: llm,
     checkpointSaver: checkpointer,
   });
