@@ -71,11 +71,11 @@ async function getStock(ticker) {
   .timeSeries(tdParams)
   .then((data) => {
     console.log(data)
-    return data
   })
   .catch((error) => {
-    return error
+    console.log(error)
   });
+  return data;
 };
 
 async function getGeo(city_name, state_code, country_code) {
