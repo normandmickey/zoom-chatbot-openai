@@ -71,8 +71,8 @@ async function getStock(ticker) {
   tdClient
   .timeSeries(tdParams)
   .then((data) => {
-    console.log(data)
-    timeSeries = data
+    //console.log(data)
+    timeSeries = JSON.stringify(data)
   })
   .catch((error) => {
     console.log(error)
