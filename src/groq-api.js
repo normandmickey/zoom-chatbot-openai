@@ -9,7 +9,7 @@ import pkg from "pg";
 import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
 import { DynamicStructuredTool, tool } from "@langchain/core/tools";
 import { ChatGroq } from "@langchain/groq";
-import { pkg } from "twelvedata";
+import { fwelvedata } from "twelvedata";
 
 
 import { z } from "zod";
@@ -45,9 +45,11 @@ const ask = new AskNewsSDK({
   scopes: ['news'],
 });
 
-const td = new TDClient({
-  apikey: process.env.TWELVEDATA_API_KEY,
-})
+const tdConfig = {
+  key: process.env.TWELVEDATA_API_KEY,
+};
+
+const tdClient = twelvedata(tdConfig);
 
 async function getNews(query) {
   const response = await ask.news.searchNews({
@@ -60,14 +62,19 @@ async function getNews(query) {
 };
 
 async function getStock(ticker) {
-  try {
-    const quote = await td.quote({
-      symbol: ticker,
-    });
-    return quote.data;
-  } catch (error) {
-    return ('Error fetching quote:', error);
-  }
+  let tdParams = {
+    symbol: ticker,
+    interval: "1week",
+    outputsize: 52,
+  };
+  tdClient
+  .timeSeries(tdParams)
+  .then((data) => {
+    return data
+  })
+  .catch((error) => {
+    return error
+  });
 };
 
 async function getGeo(city_name, state_code, country_code) {
