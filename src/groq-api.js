@@ -9,7 +9,7 @@ import pkg from "pg";
 import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
 import { DynamicStructuredTool, tool } from "@langchain/core/tools";
 import { ChatGroq } from "@langchain/groq";
-import { fwelvedata } from "twelvedata";
+import { twelvedata } from "twelvedata";
 
 
 import { z } from "zod";
