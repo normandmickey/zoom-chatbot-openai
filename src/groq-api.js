@@ -62,6 +62,7 @@ async function getNews(query) {
 };
 
 async function getStock(ticker) {
+  let timeSeries = ""
   let tdParams = {
     symbol: ticker,
     interval: "1week",
@@ -71,11 +72,12 @@ async function getStock(ticker) {
   .timeSeries(tdParams)
   .then((data) => {
     console.log(data)
+    timeSeries = data
   })
   .catch((error) => {
     console.log(error)
   });
-  return data;
+  return timeSeries;
 };
 
 async function getGeo(city_name, state_code, country_code) {
