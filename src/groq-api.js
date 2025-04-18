@@ -16,6 +16,7 @@ import { z } from "zod";
 import axios from 'axios';
 
 dotenv.config();
+let timeSeries = ""
 
 const LANGCHAIN_API_KEY=process.env.LANGCHAIN_API_KEY;
 const LANGCHAIN_CALLBACKS_BACKGROUND=process.env.LANGCHAIN_CALLBACKS_BACKGROUND;
@@ -62,7 +63,6 @@ async function getNews(query) {
 };
 
 async function getStock(ticker) {
-  let timeSeries = ""
   let tdParams = {
     symbol: ticker,
     interval: "1week",
