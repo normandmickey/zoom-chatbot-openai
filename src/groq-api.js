@@ -70,6 +70,7 @@ async function getStock(ticker) {
   tdClient
   .timeSeries(tdParams)
   .then((data) => {
+    console.log(data)
     return data
   })
   .catch((error) => {
