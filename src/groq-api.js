@@ -77,7 +77,7 @@ async function getStock(ticker) {
   .catch((error) => {
     console.log(error)
   });
-  console.log(timeSeries)
+  console.log("TimeSeries: " + timeSeries)
   return timeSeries;
 };
 
