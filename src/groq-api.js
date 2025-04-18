@@ -65,8 +65,8 @@ async function getNews(query) {
 async function getStock(ticker) {
   let tdParams = {
     symbol: ticker,
-    interval: "1week",
-    outputsize: 52,
+    interval: "1min",
+    outputsize: 30,
   };
   tdClient
   .timeSeries(tdParams)
