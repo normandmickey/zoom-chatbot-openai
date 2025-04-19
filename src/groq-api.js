@@ -65,8 +65,8 @@ async function getNews(query) {
 async function getStock(ticker) {
   let tdParams = {
     symbol: ticker,
-    interval: "1week",
-    outputsize: 13,
+    interval: "1day",
+    outputsize: 7,
   };
   tdClient
   .timeSeries(tdParams)
@@ -78,7 +78,14 @@ async function getStock(ticker) {
     console.log(error)
   });
   console.log("TimeSeries: " + timeSeries)
-  return timeSeries;
+  const response = await ask.news.searchNews({
+    query: "Latest news about " + ticker, // your keyword query
+    nArticles: 5, // control the number of articles to include in the context
+    returnType: 'dicts', // you can also ask for "dicts" if you want more information
+    method: 'kw', // use "nl" for natural language for your search, or "kw" for keyword search
+  });
+  var news = JSON.stringify(response);
+  return timeSeries + news;
 };
 
 async function getGeo(city_name, state_code, country_code) {
