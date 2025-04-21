@@ -150,7 +150,7 @@ const stockTool =
       schema: z.object({
          ticker: z.string().describe('Stock Ticker'),
          interval: z.string().describe('Interval weekly = 1week, daily = 1day, monthly = 1month'),
-         outputsize: z.integer().describe("Number for interval in days weeks or years.")
+         outputsize: z.string().describe("Number for interval in days weeks or years default to 7 if not specified")
       }),
       func: async ({ticker, interval, outputsize}) => {
         return getStock(ticker, interval, outputsize)
