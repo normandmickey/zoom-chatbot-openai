@@ -62,11 +62,11 @@ async function getNews(query) {
       return JSON.stringify(response);
 };
 
-async function getStock(ticker) {
+async function getStock(ticker, interval, outputsize) {
   let tdParams = {
     symbol: ticker,
-    interval: "1day",
-    outputsize: 7,
+    interval: interval,
+    outputsize: outputsize,
   };
   tdClient
   .timeSeries(tdParams)
@@ -85,6 +85,7 @@ async function getStock(ticker) {
     method: 'kw', // use "nl" for natural language for your search, or "kw" for keyword search
   });
   var news = JSON.stringify(response);
+  console.log(news)
   return timeSeries + news;
 };
 
@@ -148,9 +149,11 @@ const stockTool =
       description: "Get current stock price for ticker symbol and trends",
       schema: z.object({
          ticker: z.string().describe('Stock Ticker'),
+         interval: z.string().describe('Interval weekly = 1week, daily = 1day, monthly = 1month'),
+         outputsize: z.integer().describe("Number for interval in days weeks or years.")
       }),
-      func: async ({ticker}) => {
-        return getStock(ticker)
+      func: async ({ticker, interval, outputsize}) => {
+        return getStock(ticker, interval, outputsize)
       }
     });
 
