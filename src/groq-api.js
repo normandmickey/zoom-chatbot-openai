@@ -52,12 +52,13 @@ const tdConfig = {
 
 const tdClient = twelvedata(tdConfig);
 
-async function getNews(query) {
+async function getNews(query, category) {
   const response = await ask.news.searchNews({
         query: query, // your keyword query
         nArticles: 5, // control the number of articles to include in the context
         returnType: 'dicts', // you can also ask for "dicts" if you want more information
         method: 'kw', // use "nl" for natural language for your search, or "kw" for keyword search
+        categories: [category],
       });
       return JSON.stringify(response);
 };
@@ -133,12 +134,13 @@ async function getWeather(lat, lon) {
 const anTool =
     new DynamicStructuredTool({
       name: "AskNews",
-      description: "Get current news information do not use for historical information",
+      description: "Get news about current events.",
       schema: z.object({
         query: z.string().describe('Search Query'),
+        category: z.string().describe('Category for news search, available categories are Business, Crime, Politics, Science, Sports, Technology, Military, Health, Entertainment')
       }),
-      func: async ({query}) => {
-        return getNews(query)
+      func: async ({query, category}) => {
+        return getNews(query, category)
       }
     });
 
