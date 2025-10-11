@@ -151,7 +151,7 @@ const stockTool =
       description: "Get current stock price for ticker symbol and trends",
       schema: z.object({
          ticker: z.string().describe('Stock Ticker'),
-         interval: z.string().describe('Interval weekly = 1week, daily = 1day, monthly = 1month'),
+         interval: z.string().describe('Interval weekly = 1week, daily = 1day, monthly = 1month, default = 1day'),
          outputsize: z.string().describe("Number for interval in days weeks or years default to 7 if not specified")
       }),
       func: async ({ticker, interval, outputsize}) => {
