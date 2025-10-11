@@ -151,7 +151,7 @@ const stockTool =
       description: "Get current stock price for ticker symbol and trends",
       schema: z.object({
          ticker: z.string().describe('Stock Ticker'),
-         interval: z.string().describe('Interval weekly = 1week, daily = 1day, monthly = 1month'),
+         interval: z.string().describe('Interval weekly = 1week, daily = 1day, monthly = 1month, default = 1day'),
          outputsize: z.string().describe("Number for interval in days weeks or years default to 7 if not specified")
       }),
       func: async ({ticker, interval, outputsize}) => {
@@ -202,9 +202,9 @@ function format (date) {
   return `${year}-${month}-${day}:${minutes}`
 }
 
-const llm = new ChatGroq({ apiKey: process.env.GROQ_API_KEY, model: "groq/compound" });
+//const llm = new ChatGroq({ apiKey: process.env.GROQ_API_KEY, model: "groq/compound" });
 //const llmWt = llm.bindTools([anTool, weatherTool, wikiTool]);
-//const llm = new ChatOpenAI({model: "gpt-4o-mini", });
+const llm = new ChatOpenAI({model: "gpt-5-nano", });
 
 // Function to handle communication with the OpenAI API
 async function callGroqAPI(payload) {
@@ -216,7 +216,7 @@ async function callGroqAPI(payload) {
   try {
 
   const graph = createReactAgent({
-    //tools: [anTool, weatherTool, wikiTool, stockTool],
+    tools: [anTool, weatherTool, wikiTool, stockTool],
     llm: llm,
     checkpointSaver: checkpointer,
   });
