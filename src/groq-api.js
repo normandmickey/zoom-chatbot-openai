@@ -216,7 +216,7 @@ async function callGroqAPI(payload) {
   try {
 
   const graph = createReactAgent({
-    tools: [anTool, weatherTool, wikiTool, stockTool],
+    //tools: [anTool, weatherTool, wikiTool, stockTool],
     llm: llm,
     checkpointSaver: checkpointer,
   });
