@@ -28,6 +28,16 @@ await checkpointer.setup();
 const llm = new ChatGroq({
   apiKey: process.env.GROQ_API_KEY,
   model: 'groq/compound',
+  compound_custom: {
+    "tools": {
+      "enabled_tools": [
+        "web_search",
+        "code_interpreter",
+        "visit_website",
+        "browser_automation",
+      ]
+    }
+  }
 });
 
 // Minimal LangGraph with memory (no tools)
