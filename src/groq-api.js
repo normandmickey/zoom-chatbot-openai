@@ -30,7 +30,7 @@ const llm = new ChatGroq({
   model: 'groq/compound',
   compound_custom: {
     "tools": {
-      "enabled_tools": ["web_search","code_interpreter","visit_website","browser_automation"],
+      "enabled_tools": ["web_search","code_interpreter","visit_website","browser_automation","wolfram_alpha"],
       "wolfram_settings": { authorization: process.env.WOLFRAM_ALPHA_API_KEY }
     }
   }
