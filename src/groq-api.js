@@ -27,7 +27,7 @@ await checkpointer.setup();
 
 const llm = new ChatGroq({
   apiKey: process.env.GROQ_API_KEY,
-  model: 'groq/compound',
+  model: 'groq/compound-mini',
   compound_custom: {
     "tools": {
       "enabled_tools": ["web_search","visit_website","browser_automation","code_interpreter"],
