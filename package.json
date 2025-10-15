@@ -27,6 +27,7 @@
     "langsmith": "^0.3.73",
     "openweather-api-node": "^3.1.5",
     "pg": "^8.16.3",
+    "ragie": "^1.12.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "twelvedata": "^3.0.1",

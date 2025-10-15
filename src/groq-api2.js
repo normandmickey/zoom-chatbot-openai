@@ -65,17 +65,22 @@ async function callGroqAPI(payload) {
   const question = payload.cmd;
   const fDate = format(new Date());
   const threadId = payload.toJid + fDate;
+
   const ragie = new Ragie({
     auth: ragieApiKey
   });
-
-    const response = await ragie.retrievals.retrieve({
-      question,
-      
-    });
-
-    const chunkText = response.scoredChunks.map((chunk) => chunk.text);
-    const systemPrompt = `These are very important to follow:
+  
+  const query = question;
+  
+  (async () => {
+    try {
+      const response = await ragie.retrievals.retrieve({
+        query,
+        
+      });
+  
+      const chunkText = response.scoredChunks.map((chunk) => chunk.text);
+      const systemPrompt = `These are very important to follow:
 
 You are "Ragie AI", a professional but friendly AI chatbot working as an assitant to the user.
 
@@ -94,14 +99,14 @@ ${chunkText}
 
 If the answer is not found in the the above context, use the tools available (web search, code execution) to you to find the answer.
 END SYSTEM INSTRUCTIONS`;
-  
+
 
   try {
     const config = { configurable: { thread_id: threadId } };
 
     const agentOutput = await graph.invoke(
       {
-        messages: [new SystemMessage(systemPrompt), new HumanMessage(question)],
+        messages: [new HumanMessage(question), new SystemMessage(systemPrompt)],
       },
       config
     );
