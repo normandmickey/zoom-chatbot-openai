@@ -63,6 +63,7 @@ function format(date) {
 // Function to handle communication using Groq LLM and LangGraph with memory
 async function callGroqAPI(payload) {
   const question = payload.cmd;
+  const query = payload.cmd;
   const fDate = format(new Date());
   const threadId = payload.toJid + fDate;
   const ragie = new Ragie({
@@ -70,7 +71,7 @@ async function callGroqAPI(payload) {
   });
 
     const response = await ragie.retrievals.retrieve({
-      question,
+      query,
       
     });
 
