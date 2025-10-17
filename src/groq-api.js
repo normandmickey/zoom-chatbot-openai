@@ -71,8 +71,8 @@ async function callGroqAPI(payload) {
   });
 
     const response = await ragie.retrievals.retrieve({
-      query,
-      
+      query: query,
+      partition: "partition2",
     });
 
     const chunkText = response.scoredChunks.map((chunk) => chunk.text);
