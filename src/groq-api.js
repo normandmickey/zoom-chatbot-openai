@@ -71,14 +71,13 @@ async function callGroqAPI(payload) {
   });
 
     const response = await ragie.retrievals.retrieve({
-      query: query,
-      partition: "partition2",
+      query: query
     });
 
     const chunkText = response.scoredChunks.map((chunk) => chunk.text);
     const systemPrompt = `These are very important to follow:
 
-You are "Ragavi", a professional but friendly AI chatbot working as an assitant to the user.
+You are "Ragbee", a professional but friendly AI chatbot working as an assitant to the user.
 
 Your current task is to help the user based on all of the information available to you shown below.
 Answer informally, directly, and concisely without a heading or greeting but include everything relevant.

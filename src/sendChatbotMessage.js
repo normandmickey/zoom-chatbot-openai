@@ -8,7 +8,7 @@ async function sendChatToZoom(chatbotToken, question, message, payload) {
       'user_jid': payload.toJid,
       'content': {
         'head': {
-          'text': 'GPTSW: ' + question,
+          'text': 'Ragbee: ' + question,
         },
         'body': [{
           'type': 'message',
