@@ -14,7 +14,6 @@ app.get('/', (req, res) => {
   res.send('OK');
 });
 
-// Webhook endpoint for Zoom events
 app.post('/openai', handleZoomWebhook);
 
 app.listen(port, () => console.log(`Zoom for Team Chat listening on port ${port}!`));
