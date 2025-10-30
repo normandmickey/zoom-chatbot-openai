@@ -6,6 +6,7 @@ async function sendChatToZoom(chatbotToken, question, message, payload) {
       'robot_jid': process.env.ZOOM_BOT_JID,
       'to_jid': payload.toJid,
       'user_jid': payload.toJid,
+       "is_markdown_support": true,
       'content': {
         'head': {
           'text': 'Ragbee: ' + question,
