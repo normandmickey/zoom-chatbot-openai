@@ -1,6 +1,6 @@
 import { ChatGroq } from "@langchain/groq";
 import * as dotenv from "dotenv";
-import settings from "../constants/settings.json" assert { type: "json" };
+import settings from "../constants/settings.json" with { type: "json" };
 
 dotenv.config();
 
