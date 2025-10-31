@@ -11,12 +11,14 @@ class ZoomMessageService {
   * @param {string} message - Response message to send
   * @param {Object} payload - Original webhook payload
   * @returns {Promise<Object>} Response from Zoom API
-  */
+*/
  async sendMessage(chatbotToken, question, message, payload) {
   const data = {
    robot_jid: zoomConfig.botJid,
    to_jid: payload.toJid,
    user_jid: payload.toJid,
+   account_id: payload.accountId,
+   is_markdown_support: true,
    content: {
     head: {
      text: `${settings.zoom.messageHeader}: ${question}`,
@@ -25,7 +27,6 @@ class ZoomMessageService {
      {
       type: "message",
       text: message,
-      format: "markdown",
      },
     ],
    },
@@ -40,6 +41,7 @@ class ZoomMessageService {
    logger.info("Sending message to Zoom", {
     toJid: payload.toJid,
     messageLength: message.length,
+    markdownEnabled: true,
    });
 
    const response = await axios.post(zoomConfig.api.chatMessagesUrl, data, {
@@ -66,11 +68,6 @@ class ZoomMessageService {
   }
  }
 
- /**
-  * @param {string} chatbotToken - Zoom chatbot access token
-  * @param {Object} payload - Original webhook payload
-  * @param {string} errorMessage - Error message to send
-  */
  async sendErrorMessage(
   chatbotToken,
   payload,
