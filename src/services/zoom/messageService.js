@@ -1,6 +1,6 @@
 import axios from "axios";
 import zoomConfig from "../../config/zoom.js";
-import settings from "../../constants/settings.json" assert { type: "json" };
+import settings from "../../constants/settings.json" with { type: "json" };
 import logger from "../../utils/logger.js";
 import { AppError } from "../../utils/errorHandler.js";
 

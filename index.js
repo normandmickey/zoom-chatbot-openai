@@ -1,6 +1,6 @@
 import createApp from "./src/app.js";
 import logger from "./src/utils/logger.js";
-import settings from "./src/constants/settings.json" assert { type: "json" };
+import settings from "./src/constants/settings.json" with { type: "json" };
 
 const port = process.env.PORT || settings.app.port || 8000;
 

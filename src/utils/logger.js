@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import settings from "../constants/settings.json" assert { type: "json" };
+import settings from "../constants/settings.json" with { type: "json" };
 
 const LOG_DIR = settings.logging.directory || "./logs";
 

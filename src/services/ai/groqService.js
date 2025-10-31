@@ -3,7 +3,7 @@ import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import createLLM from "../../config/llm.js";
 import checkpointService from "../memory/checkpointService.js";
 import ragieService from "./ragieService.js";
-import prompts from "../../constants/prompts.json" assert { type: "json" };
+import prompts from "../../constants/prompts.json" with { type: "json" };
 import logger from "../../utils/logger.js";
 import { generateThreadId } from "../../utils/dateFormatter.js";
 import { AppError } from "../../utils/errorHandler.js";
