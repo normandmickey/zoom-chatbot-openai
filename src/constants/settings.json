@@ -1,0 +1,35 @@
+{
+  "app": {
+    "name": "Zoom RAG Chatbot",
+    "version": "1.0.0",
+    "port": 8000,
+    "environment": "development"
+  },
+  "groq": {
+    "model": "groq/compound-mini",
+    "enabledTools": [
+      "web_search",
+      "visit_website",
+      "browser_automation",
+      "code_interpreter"
+    ]
+  },
+  "ragie": {
+    "defaultMaxResults": 5
+  },
+  "database": {
+    "poolConfig": {
+      "max": 20,
+      "idleTimeoutMillis": 30000,
+      "connectionTimeoutMillis": 2000
+    }
+  },
+  "logging": {
+    "level": "info",
+    "format": "json",
+    "directory": "./logs"
+  },
+  "zoom": {
+    "messageHeader": "Ragbee"
+  }
+}
