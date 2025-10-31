@@ -25,6 +25,7 @@ class ZoomMessageService {
      {
       type: "message",
       text: message,
+      format: "markdown",
      },
     ],
    },
