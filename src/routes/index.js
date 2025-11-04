@@ -3,7 +3,7 @@ import webhookRouter from "./webhook.js";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
+router.get("/test", (req, res) => {
  res.status(200).json({
   status: "ok",
   message: "Zoom RAG Chatbot API",
