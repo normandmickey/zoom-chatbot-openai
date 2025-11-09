@@ -1,0 +1,44 @@
+{
+  "tiers": {
+    "free": {
+      "name": "Free Tier",
+      "description": "Basic AI assistance without external tools",
+      "features": {
+        "ai_chat": true,
+        "rag_enabled": false,
+        "enabled_tools": []
+      },
+      "displayMessage": "You have access to: *Basic AI chat only*\n\nUpgrade to unlock:\n> Mid Tier: Web search and advanced tools\n> Premium Tier: Knowledge base (RAG) integration"
+    },
+    "mid": {
+      "name": "Mid Tier",
+      "description": "AI assistance with web search and advanced tools",
+      "features": {
+        "ai_chat": true,
+        "rag_enabled": false,
+        "enabled_tools": [
+          "web_search",
+          "visit_website",
+          "browser_automation",
+          "code_interpreter"
+        ]
+      },
+      "displayMessage": "You have access to: *AI chat + Web search + Advanced tools*\n\nUpgrade to Premium to unlock:\n> Knowledge base (RAG) integration for company-specific information"
+    },
+    "premium": {
+      "name": "Premium Tier",
+      "description": "Full AI assistance with RAG knowledge base integration",
+      "features": {
+        "ai_chat": true,
+        "rag_enabled": true,
+        "enabled_tools": [
+          "web_search",
+          "visit_website",
+          "browser_automation",
+          "code_interpreter"
+        ]
+      },
+      "displayMessage": "You have access to: *Full Premium features*\n> AI chat\n> Web search and advanced tools\n> Knowledge base integration"
+    }
+  }
+}
