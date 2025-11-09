@@ -1,5 +1,6 @@
 import express from "express";
 import webhookRouter from "./webhook.js";
+import adminRouter from "./admin.js";
 
 const router = express.Router();
 
@@ -19,5 +20,7 @@ router.get("/health", (req, res) => {
 });
 
 router.use("/openai", webhookRouter);
+
+router.use("/admin", adminRouter);
 
 export default router;
