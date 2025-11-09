@@ -3,131 +3,229 @@ import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import createLLM from "../../config/llm.js";
 import checkpointService from "../memory/checkpointService.js";
 import ragieService from "./ragieService.js";
+import subscriptionService from "../subscription/subscriptionService.js";
 import prompts from "../../constants/prompts.json" with { type: "json" };
 import logger from "../../utils/logger.js";
 import { generateThreadId } from "../../utils/dateFormatter.js";
 import { AppError } from "../../utils/errorHandler.js";
 
 class GroqService {
- constructor() {
-  this.llm = null;
-  this.graph = null;
-  this.initialized = false;
- }
-
- async initialize() {
-  if (this.initialized) {
-   return;
+  constructor() {
+    this.llm = null;
+    this.graph = null;
+    this.initialized = false;
   }
 
-  try {
-   logger.info("Initializing Groq service");
+  async initialize() {
+    if (this.initialized) {
+      return;
+    }
 
-   this.llm = createLLM();
+    try {
+      logger.info("Initializing Groq service");
 
-   const checkpointer = await checkpointService.initialize();
+      await subscriptionService.initialize();
 
-   const workflow = new StateGraph(MessagesAnnotation)
-    .addNode("chat", async (state) => {
-     const response = await this.llm.invoke(state.messages);
-     return { messages: [response] };
-    })
-    .addEdge("__start__", "chat")
-    .addEdge("chat", "__end__");
+      this.llm = createLLM();
 
-   this.graph = workflow.compile({ checkpointer });
-   this.initialized = true;
+      const checkpointer = await checkpointService.initialize();
 
-   logger.info("Groq service initialized successfully");
-  } catch (error) {
-   logger.error("Failed to initialize Groq service", { error: error.message });
-   throw error;
-  }
- }
+      const workflow = new StateGraph(MessagesAnnotation)
+        .addNode("chat", async (state) => {
+          const response = await this.llm.invoke(state.messages);
+          return { messages: [response] };
+        })
+        .addEdge("__start__", "chat")
+        .addEdge("chat", "__end__");
 
- /**
-  * @param {string} context - Retrieved context from RAG
-  * @param {string} promptType - Type of prompt to use (default: 'ragbee')
-  * @returns {string} System prompt with context
-  */
- _buildSystemPrompt(context, promptType = "ragbee") {
-  const promptConfig = prompts[promptType];
+      this.graph = workflow.compile({ checkpointer });
+      this.initialized = true;
 
-  if (!promptConfig) {
-   logger.warn(`Prompt type '${promptType}' not found, using default 'ragbee'`);
-   return prompts.ragbee.systemPrompt.replace("{CONTEXT}", context);
+      logger.info("Groq service initialized successfully");
+    } catch (error) {
+      logger.error("Failed to initialize Groq service", { error: error.message });
+      throw error;
+    }
   }
 
-  return promptConfig.systemPrompt.replace("{CONTEXT}", context);
- }
-
- /**
-  * @param {Object} lastMessage - Last message from LLM
-  * @returns {string} Extracted content
-  */
- _extractContent(lastMessage) {
-  if (typeof lastMessage?.content === "string") {
-   return lastMessage.content;
+  _getCurrentDateTime() {
+    const now = new Date();
+    return now.toLocaleString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZoneName: "short",
+    });
   }
 
-  if (Array.isArray(lastMessage?.content)) {
-   return lastMessage.content.map((p) => p?.text || "").join("");
+  /**
+   * @param {string} userJid - User's JID
+   * @returns {Promise<string>} Feature description
+   */
+  async _buildFeaturesDescription(userJid) {
+    const tier = await subscriptionService.getUserTier(userJid);
+    const config = subscriptionService.getTierConfig(tier);
+    
+    let features = "# Your Current Subscription\n";
+    features += `*${config.name}*\n\n`;
+    
+    if (config.features.rag_enabled) {
+      features += "✓ Knowledge base access enabled\n";
+    } else {
+      features += "✗ Knowledge base access (upgrade to Premium)\n";
+    }
+    
+    if (config.features.enabled_tools.length > 0) {
+      features += `✓ Advanced tools enabled: ${config.features.enabled_tools.join(", ")}\n`;
+    } else {
+      features += "✗ Advanced tools (upgrade to Mid or Premium tier)\n";
+    }
+    
+    return features;
   }
 
-  return String(lastMessage?.content || "");
- }
+  /**
+   * @param {string} context - Retrieved context from RAG
+   * @param {string} userJid - User's JID for tier checking
+   * @param {string} promptType - Type of prompt to use (default 'ragbee')
+   * @returns {Promise<string>} System prompt with context and datetime
+   */
+  async _buildSystemPrompt(context, userJid, promptType = "ragbee") {
+    const promptConfig = prompts[promptType];
 
- /**
-  * @param {string} question - User's question
-  * @param {string} userJid - User's JID for thread management
-  * @param {string} promptType - Type of prompt to use
-  * @returns {Promise<string>} AI response
-  */
- async chat(question, userJid, promptType = "ragbee") {
-  if (!this.initialized) {
-   await this.initialize();
+    if (!promptConfig) {
+      logger.warn(`Prompt type '${promptType}' not found, using default 'ragbee'`);
+      promptType = "ragbee";
+    }
+
+    const datetime = this._getCurrentDateTime();
+    const features = await this._buildFeaturesDescription(userJid);
+
+    let systemPrompt = prompts[promptType].systemPrompt;
+    systemPrompt = systemPrompt.replace("{DATETIME}", datetime);
+    systemPrompt = systemPrompt.replace("{CONTEXT}", context);
+    systemPrompt = systemPrompt.replace("{FEATURES}", features);
+
+    return systemPrompt;
   }
 
-  try {
-   logger.info("Processing chat request", { question, userJid, promptType });
+  /**
+   * @param {Object} lastMessage - Last message from LLM
+   * @returns {string} Extracted content
+   */
+  _extractContent(lastMessage) {
+    if (typeof lastMessage?.content === "string") {
+      return lastMessage.content;
+    }
 
-   const threadId = generateThreadId(userJid);
+    if (Array.isArray(lastMessage?.content)) {
+      return lastMessage.content.map((p) => p?.text || "").join("");
+    }
 
-   const context = await ragieService.retrieveContext(question);
-
-   const systemPrompt = this._buildSystemPrompt(context, promptType);
-
-   const config = { configurable: { thread_id: threadId } };
-
-   const agentOutput = await this.graph.invoke(
-    {
-     messages: [new SystemMessage(systemPrompt), new HumanMessage(question)],
-    },
-    config
-   );
-
-   const lastMsg = agentOutput.messages[agentOutput.messages.length - 1];
-   const reply = this._extractContent(lastMsg);
-
-   logger.info("Successfully generated chat response", {
-    question,
-    userJid,
-    replyLength: reply.length,
-   });
-
-   return reply;
-  } catch (error) {
-   logger.error("Error processing chat request", {
-    question,
-    userJid,
-    error: error.message,
-   });
-   throw new AppError("Failed to process chat request", 500, {
-    question,
-    userJid,
-   });
+    return String(lastMessage?.content || "");
   }
- }
+
+  /**
+   * @param {string} userJid - User's JID
+   * @returns {Promise<Object>} Configured LLM instance
+   */
+  async _createTieredLLM(userJid) {
+    const enabledTools = await subscriptionService.getEnabledTools(userJid);
+    
+    if (!process.env.GROQ_API_KEY) {
+      throw new Error("GROQ_API_KEY is not set in environment variables");
+    }
+
+    const { ChatGroq } = await import("@langchain/groq");
+    const settings = (await import("../../constants/settings.json", { with: { type: "json" } })).default;
+
+    return new ChatGroq({
+      apiKey: process.env.GROQ_API_KEY,
+      model: settings.groq.model,
+      compound_custom: {
+        tools: {
+          enabled_tools: enabledTools,
+        },
+      },
+    });
+  }
+
+  /**
+   * @param {string} question - Users question
+   * @param {string} userJid - Users JID for thread management and tier checking
+   * @param {string} promptType - Type of prompt to use
+   * @returns {Promise<string>} AI response
+   */
+  async chat(question, userJid, promptType = "ragbee") {
+    if (!this.initialized) {
+      await this.initialize();
+    }
+
+    try {
+      logger.info("Processing chat request", { question, userJid, promptType });
+
+      const threadId = generateThreadId(userJid);
+
+      const hasRagAccess = await subscriptionService.hasFeatureAccess(userJid, "rag");
+      
+      let context = "";
+      if (hasRagAccess) {
+        context = await ragieService.retrieveContext(question);
+        logger.info("RAG context retrieved", { userJid, contextLength: context.length });
+      } else {
+        context = "No knowledge base context available. Using general AI knowledge only.";
+        logger.info("RAG access denied for user tier", { userJid });
+      }
+
+      const systemPrompt = await this._buildSystemPrompt(context, userJid, promptType);
+
+      const tieredLLM = await this._createTieredLLM(userJid);
+
+      const workflow = new StateGraph(MessagesAnnotation)
+        .addNode("chat", async (state) => {
+          const response = await tieredLLM.invoke(state.messages);
+          return { messages: [response] };
+        })
+        .addEdge("__start__", "chat")
+        .addEdge("chat", "__end__");
+
+      const checkpointer = checkpointService.getCheckpointer();
+      const tieredGraph = workflow.compile({ checkpointer });
+
+      const config = { configurable: { thread_id: threadId } };
+
+      const agentOutput = await tieredGraph.invoke(
+        {
+          messages: [new SystemMessage(systemPrompt), new HumanMessage(question)],
+        },
+        config
+      );
+
+      const lastMsg = agentOutput.messages[agentOutput.messages.length - 1];
+      const reply = this._extractContent(lastMsg);
+
+      logger.info("Successfully generated chat response", {
+        question,
+        userJid,
+        replyLength: reply.length,
+      });
+
+      return reply;
+    } catch (error) {
+      logger.error("Error processing chat request", {
+        question,
+        userJid,
+        error: error.message,
+      });
+      throw new AppError("Failed to process chat request", 500, {
+        question,
+        userJid,
+      });
+    }
+  }
 }
 
 const groqService = new GroqService();
