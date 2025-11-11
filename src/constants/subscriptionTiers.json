@@ -21,7 +21,7 @@
           "visit_website"
         ]
       },
-      "displayMessage": "You have access to: *AI chat + Web search + Advanced tools*\n\nUpgrade to Premium to unlock:\n> Knowledge base (RAG) integration for company-specific information"
+      "displayMessage": "You have access to: *AI chat + Web search\n\nUpgrade to Premium to unlock:\n> Knowledge base (RAG) integration for company-specific information"
     },
     "premium": {
       "name": "Premium Tier",
