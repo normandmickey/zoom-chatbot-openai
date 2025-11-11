@@ -1,46 +1,72 @@
-# Zoom Chatbot Powered by OpenAI
+# RAGBee
 
+AI chatbot for Zoom Team Chat with websearch and RAG knowledge base.
 
-# What the Chatbot does?
+## Overview
 
+RAGBee chatbot integrates with Zoom Team Chat to provide AI powered responses with conversation memory. It features advanced capabilities including web search, knowledge base retrieval, and browser automation.
 
-## Prerequisites
+## Tech Stack
 
-Before you can use this chatbot, you'll need the following:
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js
+- **Database**: PostgreSQL
+- **LLM**: Groq (compound-mini model)
+- **RAG**: Ragie knowledge base
+- **State Management**: LangGraph with PostgreSQL checkpointing
+- **Dependencies**: 
+  - `@langchain/langgraph` for agent workflows
+  - `@langchain/groq` for LLM integration
+  - `ragie` for knowledge base retrieval
+  - `pg` for PostgreSQL connection
+  - `axios` for HTTP requests
 
-- Node.js (version 12 or later)
-- A Zoom account 
-- An OpenAI Account
+## User Flow
 
-## Setup
+1. **User sends message** in Zoom Team Chat to the bot
+2. **Zoom webhook** delivers message to `/openai` endpoint
+3. **Subscription check** determines user's tier and available features
+4. **Context retrieval** (Premium only) fetches relevant information from Ragie knowledge base
+5. **LLM processing** generates response using Groq with tier-appropriate tools enabled
+6. **Conversation state** is saved to PostgreSQL via LangGraph checkpointing
+7. **Response sent** back to user in Zoom chat with markdown formatting
 
+## Subscription Tiers
+
+| Tier | AI Chat | Web Search | Advanced Tools | RAG Knowledge Base |
+|------|---------|------------|----------------|-------------------|
+| Free | ✓ | | | |
+| Standard | ✓ | ✓ | ✓ | |
+| Premium | ✓ | ✓ | ✓ | ✓ |
+
+## API Endpoints
+
+### Webhooks
+- `POST /openai` - Zoom webhook handler
+
+### Admin
+- `GET /admin/subscription/:userJid` - Get user subscription
+- `PUT /admin/subscription/:userJid` - Update user subscription
+- `GET /admin/tiers` - List all tiers
+- `GET /admin/subscription/:userJid/features` - Get user features
+
+### Health
+- `GET /health` - Health check
+- `GET /test` - API status
 
 ## Configuration
 
-You need to set up your environment variables. Create a `.env` file in the project root and add the following variables:
+Key settings in `src/constants/settings.json`:
+- App name, version, port
+- Groq model and enabled tools
+- Database pool configuration
+- Logging configuration
 
-- ZOOM_CLIENT_ID=
-- ZOOM_CLIENT_SECRET=
-- ZOOM_BOT_JID=
-- ZOOM_WEBHOOK_SECRET_TOKEN=
-- ZOOM_VERIFICATION_CODE=
-- OPENAI_API_KEY=
+System prompts in `src/constants/prompts.json`:
+- Bot personality and behavior
+- Response formatting rules
+- Security instructions
 
+## License
 
-To obtain these variables:
-
-- For Zoom variables (ZOOM_CLIENT_ID, ZOOM_CLIENT_SECRET, ZOOM_BOT_JID, ZOOM_WEBHOOK_SECRET_TOKEN, ZOOM_VERIFICATION_CODE), refer to the [Zoom App Marketplace guide on creating a Team Chat app](https://developers.zoom.us/docs/team-chat-apps/create/).
-
-## Running the Application
-
-To start the application:
-
-npm run start
-
-The application will run on `http://localhost:4000/` by default, but you can set a different port by changing the `PORT` variable in your `.env` file.
-
-## Usage
-
-- In your Zoom Team Chat App's Credentials section, go to the Local Test or Submit page depending on which environment you are using (Development or Production), and click "Add". 
-- After authorizing, you will be taken to Zoom Team Chat and see a message from the Zoom-OpenAI-Chatbot: <br />
-"Greetings from Zoom-OpenAI-Chatbot Bot!"
+ISC
