@@ -36,7 +36,7 @@ RAGBee chatbot integrates with Zoom Team Chat to provide AI powered responses wi
 | Tier | AI Chat | Web Search | Advanced Tools | RAG Knowledge Base |
 |------|---------|------------|----------------|-------------------|
 | Free | ✓ | | | |
-| Standard | ✓ | ✓ | ✓ | |
+| Standard | ✓ | ✓ | | |
 | Premium | ✓ | ✓ | ✓ | ✓ |
 
 ## API Endpoints
