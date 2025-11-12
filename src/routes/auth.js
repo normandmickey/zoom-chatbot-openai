@@ -1,0 +1,251 @@
+import express from "express";
+import axios from "axios";
+import zoomConfig from "../config/zoom.js";
+import pool from "../config/database.js";
+import subscriptionService from "../services/subscription/subscriptionService.js";
+import { asyncHandler } from "../utils/errorHandler.js";
+import logger from "../utils/logger.js";
+
+const router = express.Router();
+
+/**
+ * Exchange authorization code for access token
+ */
+router.post(
+ "/oauth/token",
+ asyncHandler(async (req, res) => {
+  const { code, redirectUri } = req.body;
+
+  if (!code || !redirectUri) {
+   return res.status(400).json({
+    success: false,
+    message: "Missing code or redirectUri",
+   });
+  }
+
+  try {
+   const tokenResponse = await axios.post("https://zoom.us/oauth/token", null, {
+    params: {
+     grant_type: "authorization_code",
+     code,
+     redirect_uri: redirectUri,
+    },
+    auth: {
+     username: zoomConfig.clientId,
+     password: zoomConfig.clientSecret,
+    },
+   });
+
+   const { access_token, refresh_token, expires_in } = tokenResponse.data;
+
+   const userResponse = await axios.get("https://api.zoom.us/v2/users/me", {
+    headers: {
+     Authorization: `Bearer ${access_token}`,
+    },
+   });
+
+   const user = userResponse.data;
+   const userJid = user.email || user.id;
+
+   // Determine subscription tier based on Zoom plan
+   // Type 1 = Basic (free), Type 2 = Licensed (paid), Type 3 = On-premise
+   let tier = "free";
+   if (user.type === 2 || user.type === 3) {
+    tier = "premium";
+   }
+
+   await pool.query(
+    `
+        INSERT INTO users (
+          user_jid, 
+          email, 
+          first_name, 
+          last_name, 
+          zoom_user_id,
+          zoom_account_id,
+          zoom_user_type,
+          access_token,
+          refresh_token,
+          token_expires_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW() + INTERVAL '1 hour')
+        ON CONFLICT (user_jid) 
+        DO UPDATE SET
+          email = $2,
+          first_name = $3,
+          last_name = $4,
+          zoom_user_id = $5,
+          zoom_account_id = $6,
+          zoom_user_type = $7,
+          access_token = $8,
+          refresh_token = $9,
+          token_expires_at = NOW() + INTERVAL '1 hour',
+          updated_at = CURRENT_TIMESTAMP
+        `,
+    [
+     userJid,
+     user.email,
+     user.first_name,
+     user.last_name,
+     user.id,
+     user.account_id,
+     user.type,
+     access_token,
+     refresh_token,
+    ]
+   );
+
+   await subscriptionService.setUserTier(userJid, tier);
+
+   logger.info("User authenticated successfully", {
+    userJid,
+    email: user.email,
+    tier,
+   });
+
+   res.status(200).json({
+    success: true,
+    accessToken: access_token,
+    refreshToken: refresh_token,
+    expiresIn: expires_in,
+    user: {
+     id: user.id,
+     email: user.email,
+     firstName: user.first_name,
+     lastName: user.last_name,
+     type: user.type,
+    },
+   });
+  } catch (error) {
+   logger.error("OAuth token exchange failed", {
+    error: error.message,
+    response: error.response?.data,
+   });
+
+   res.status(500).json({
+    success: false,
+    message: "Failed to authenticate with Zoom",
+   });
+  }
+ })
+);
+
+/**
+ * Refresh access token
+ */
+router.post(
+ "/oauth/refresh",
+ asyncHandler(async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+   return res.status(400).json({
+    success: false,
+    message: "Missing refresh token",
+   });
+  }
+
+  try {
+   const tokenResponse = await axios.post("https://zoom.us/oauth/token", null, {
+    params: {
+     grant_type: "refresh_token",
+     refresh_token: refreshToken,
+    },
+    auth: {
+     username: zoomConfig.clientId,
+     password: zoomConfig.clientSecret,
+    },
+   });
+
+   const { access_token, refresh_token, expires_in } = tokenResponse.data;
+
+   await pool.query(
+    `
+        UPDATE users 
+        SET access_token = $1, 
+            refresh_token = $2, 
+            token_expires_at = NOW() + INTERVAL '1 hour',
+            updated_at = CURRENT_TIMESTAMP
+        WHERE refresh_token = $3
+        `,
+    [access_token, refresh_token, refreshToken]
+   );
+
+   logger.info("Token refreshed successfully");
+
+   res.status(200).json({
+    success: true,
+    accessToken: access_token,
+    refreshToken: refresh_token,
+    expiresIn: expires_in,
+   });
+  } catch (error) {
+   logger.error("Token refresh failed", {
+    error: error.message,
+   });
+
+   res.status(500).json({
+    success: false,
+    message: "Failed to refresh token",
+   });
+  }
+ })
+);
+
+/**
+ * Get current user profile
+ */
+router.get(
+ "/me",
+ asyncHandler(async (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+   return res.status(401).json({
+    success: false,
+    message: "No token provided",
+   });
+  }
+
+  const token = authHeader.substring(7);
+
+  try {
+   const result = await pool.query(
+    "SELECT * FROM users WHERE access_token = $1",
+    [token]
+   );
+
+   if (result.rows.length === 0) {
+    return res.status(401).json({
+     success: false,
+     message: "Invalid token",
+    });
+   }
+
+   const user = result.rows[0];
+
+   const tier = await subscriptionService.getUserTier(user.user_jid);
+
+   res.status(200).json({
+    success: true,
+    user: {
+     userJid: user.user_jid,
+     email: user.email,
+     firstName: user.first_name,
+     lastName: user.last_name,
+     tier,
+    },
+   });
+  } catch (error) {
+   logger.error("Failed to get user profile", {
+    error: error.message,
+   });
+
+   res.status(500).json({
+    success: false,
+    message: "Failed to get user profile",
+   });
+  }
+ })
+);
+
+export default router;
