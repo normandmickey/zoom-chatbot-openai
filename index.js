@@ -2,18 +2,21 @@ import createApp from "./src/app.js";
 import logger from "./src/utils/logger.js";
 import settings from "./src/constants/settings.json" with { type: "json" };
 
-const port = process.env.PORT || settings.app.port || 8000;
+const port = process.env.PORT || 4000;
 
 async function startServer() {
  try {
   const app = createApp();
 
-  app.listen(port, () => {
+  app.listen(port, 'localhost', () => {
    logger.info(`${settings.app.name} listening on port ${port}`, {
     environment: process.env.NODE_ENV || settings.app.environment,
     version: settings.app.version,
    });
    console.log(`Server running on http://localhost:${port}`);
+   console.log(`API endpoints available at: http://localhost:${port}/api/`);
+   console.log(`Zoom webhook URL: https://ragbee.ai/api/webhook`);
+   console.log(`Health check: https://ragbee.ai/api/health`);
   });
  } catch (error) {
   logger.error("Failed to start server", { error: error.message });
