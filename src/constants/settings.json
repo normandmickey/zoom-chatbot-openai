@@ -2,8 +2,8 @@
   "app": {
     "name": "Zoom RAG Chatbot",
     "version": "1.0.0",
-    "port": 8000,
-    "environment": "development"
+    "port": 4000,
+    "environment": "production"
   },
   "groq": {
     "model": "groq/compound-mini",
