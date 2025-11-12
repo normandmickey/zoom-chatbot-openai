@@ -19,7 +19,7 @@ router.get("/health", (req, res) => {
  });
 });
 
-router.use("/openai", webhookRouter);
+router.use("/webhook", webhookRouter);
 
 router.use("/admin", adminRouter);
 
