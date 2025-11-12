@@ -17,21 +17,31 @@ class RagieService {
  }
 
  /**
+  * Retrieve context from RAG, filtered by user
   * @param {string} query - Search query
+  * @param {string} userJid - User JID to filter documents
   * @param {number} maxResults - Maximum number of results to retrieve
   * @returns {Promise<string>} Concatenated text chunks
   */
- async retrieveContext(query, maxResults = 5) {
+ async retrieveContext(query, userJid = null, maxResults = 5) {
   try {
-   logger.info("Retrieving context from Ragie", { query, maxResults });
+   logger.info("Retrieving context from Ragie", { query, userJid, maxResults });
 
-   const response = await this.client.retrievals.retrieve({
+   const retrievalParams = {
     query,
     topK: maxResults,
-   });
+   };
+
+   if (userJid) {
+    retrievalParams.filter = {
+     userJid: userJid,
+    };
+   }
+
+   const response = await this.client.retrievals.retrieve(retrievalParams);
 
    if (!response.scoredChunks || response.scoredChunks.length === 0) {
-    logger.warn("No chunks retrieved from Ragie", { query });
+    logger.warn("No chunks retrieved from Ragie", { query, userJid });
     return "";
    }
 
@@ -40,6 +50,7 @@ class RagieService {
 
    logger.info("Successfully retrieved context from Ragie", {
     query,
+    userJid,
     chunksCount: chunkTexts.length,
    });
 
@@ -47,6 +58,7 @@ class RagieService {
   } catch (error) {
    logger.error("Error retrieving context from Ragie", {
     query,
+    userJid,
     error: error.message,
    });
    throw new AppError("Failed to retrieve context from Ragie", 500, { query });
