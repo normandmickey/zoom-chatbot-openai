@@ -8,6 +8,10 @@ const zoomConfig = {
  botJid: process.env.ZOOM_BOT_JID,
  webhookSecret: process.env.ZOOM_WEBHOOK_SECRET_TOKEN,
  verificationCode: process.env.ZOOM_VERIFICATION_CODE,
+ oauthClientId: process.env.ZOOM_OAUTH_CLIENT_ID || process.env.ZOOM_CLIENT_ID,
+ oauthClientSecret:
+  process.env.ZOOM_OAUTH_CLIENT_SECRET || process.env.ZOOM_CLIENT_SECRET,
+ oauthRedirectUri: process.env.ZOOM_OAUTH_REDIRECT_URI,
 
  oauth: {
   tokenUrl: "https://zoom.us/oauth/token?grant_type=client_credentials",
