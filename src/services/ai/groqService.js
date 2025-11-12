@@ -173,7 +173,7 @@ class GroqService {
       
       let context = "";
       if (hasRagAccess) {
-        context = await ragieService.retrieveContext(question);
+        context = await ragieService.retrieveContext(question ,userJid);
         logger.info("RAG context retrieved", { userJid, contextLength: context.length });
       } else {
         context = "No knowledge base context available. Using general AI knowledge only.";

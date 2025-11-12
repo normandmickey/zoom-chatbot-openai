@@ -1,6 +1,8 @@
 import express from "express";
 import webhookRouter from "./webhook.js";
 import adminRouter from "./admin.js";
+import authRouter from "./auth.js";
+import documentsRouter from "./documents.js";
 
 const router = express.Router();
 
@@ -22,5 +24,9 @@ router.get("/health", (req, res) => {
 router.use("/webhook", webhookRouter);
 
 router.use("/admin", adminRouter);
+
+router.use("/auth", authRouter);
+
+router.use("/documents", documentsRouter);
 
 export default router;

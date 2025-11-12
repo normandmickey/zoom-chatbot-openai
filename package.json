@@ -35,10 +35,11 @@
     "body-parser": "^2.2.0",
     "dotenv": "^16.4.5",
     "express": "^5.1.0",
+    "multer": "^2.0.2",
     "pg": "^8.16.3",
     "ragie": "^1.12.2"
   },
   "devDependencies": {
-    "@types/node": "^24.7.2"
+    "@types/node": "^24.10.1"
   }
 }
