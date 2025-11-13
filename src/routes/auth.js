@@ -8,9 +8,6 @@ import logger from "../utils/logger.js";
 
 const router = express.Router();
 
-/**
- * Exchange authorization code for access token
- */
 router.post(
  "/oauth/token",
  asyncHandler(async (req, res) => {
@@ -45,10 +42,10 @@ router.post(
    });
 
    const user = userResponse.data;
-   const userJid = user.email || user.id;
 
-   // Determine subscription tier based on Zoom plan
-   // Type 1 = Basic (free), Type 2 = Licensed (paid), Type 3 = On-premise
+   const userJid = user.id;
+   const userEmail = user.email;
+
    let tier = "free";
    if (user.type === 2 || user.type === 3) {
     tier = "premium";
@@ -83,7 +80,7 @@ router.post(
         `,
     [
      userJid,
-     user.email,
+     userEmail,
      user.first_name,
      user.last_name,
      user.id,
@@ -98,7 +95,7 @@ router.post(
 
    logger.info("User authenticated successfully", {
     userJid,
-    email: user.email,
+    email: userEmail,
     tier,
    });
 
@@ -109,7 +106,7 @@ router.post(
     expiresIn: expires_in,
     user: {
      id: user.id,
-     email: user.email,
+     email: userEmail,
      firstName: user.first_name,
      lastName: user.last_name,
      type: user.type,
@@ -129,9 +126,6 @@ router.post(
  })
 );
 
-/**
- * Refresh access token
- */
 router.post(
  "/oauth/refresh",
  asyncHandler(async (req, res) => {
@@ -191,9 +185,6 @@ router.post(
  })
 );
 
-/**
- * Get current user profile
- */
 router.get(
  "/me",
  asyncHandler(async (req, res) => {
